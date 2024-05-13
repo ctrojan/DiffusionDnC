@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=42.0.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dnc"
+version = "0.0.1"
+description = "Code to reproduce diffusion-based divide-and-conquer MCMC experiments"
+requires-python = ">=3.10,<3.11"
+dependencies = ["blackjax==1.0.0",
+"cola-ml==0.0.1",
+"flax==0.7.4",
+"gpjax==0.7.1",
+"jax==0.4.19",
+"jaxlib==0.4.19",
+"matplotlib",
+"numpy==1.26.1",
+"optax==0.1.7",
+"pandas==2.2.1",
+"scipy==1.11.3",
+"tensorflow==2.11.0",
+"tensorflow-probability==0.19.0",
+"tqdm",
+"ucimlrepo==0.0.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
