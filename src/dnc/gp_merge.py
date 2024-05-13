@@ -12,7 +12,6 @@ from cola.ops import (
     Identity,
     LinearOperator,
 )
-# from cola.linalg.decompositions.decompositions import Cholesky
 
 
 class ConjugateMMLL(gpjax.objectives.AbstractObjective):
@@ -48,8 +47,7 @@ class ConjugateMMLL(gpjax.objectives.AbstractObjective):
         
         log_prob = 0.5*(jnp.transpose(jnp.atleast_1d((y - mx).squeeze())) @ ( C - Ky_inv ) @ jnp.atleast_1d((y - mx).squeeze())
                         - cola.linalg.logdet(Ky) - cola.linalg.logdet(A) 
-                        # below const wrt mean and kernel params ? [+ cant do rank in cola?]
-                        # - (jnp.linalg.matrix_rank(jnp.transpose(H)))*jnp.log(2*jnp.pi)                                                                              
+                                                                             
                         )
 
 
