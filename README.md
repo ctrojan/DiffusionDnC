@@ -14,6 +14,7 @@ This repository is organised as follows:
 - `/src/dnc` - package implementing the merging methods in the paper as well as the MCMC samplers and discrepancy metrics.
 - `/experiments` - scripts to reproduce the results in the paper, organised by experiment. 
   - `/toy_logistic_regression` - run with `./run.sh toylogreg`
+  - `/toy_logistic_regression_bigger` - run with `./run.sh bigtoylogreg`
   - `/mixture_of_gaussians` - run with `./run.sh mog`
   - `/powerplant` - run with `./run.sh powerplant`
   - `/spambase` - run with `./run.sh spambase`
