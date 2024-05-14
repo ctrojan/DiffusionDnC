@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 11 14:58:11 2024
-
-@author: trojanc1
-"""
-
 import jax
 from jax import numpy as jnp
 from dnc.metrics import d_mah, d_iad, d_skew
