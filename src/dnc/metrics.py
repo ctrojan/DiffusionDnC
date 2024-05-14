@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar  7 13:42:19 2024
-
-@author: trojanc1
-"""
-
 import jax
 from jax import numpy as jnp
 
