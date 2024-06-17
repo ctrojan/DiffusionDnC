@@ -17,25 +17,23 @@ from cola.ops import (
 class ConjugateMMLL(gpjax.objectives.AbstractObjective):
     def step(
         self,
-        posterior: "gpjax.gps.ConjugatePosterior",  # noqa: F821
-        train_data: gpjax.Dataset,  # noqa: F821
+        posterior: "gpjax.gps.ConjugatePosterior",
+        train_data: gpjax.Dataset,
     ) -> gpjax.typing.ScalarFloat:
-        r"""marginal y-log-likelihood of the Gaussian process, also marginalising out some mean fn params
+        r"""
+            Adapted from gpjax.objectives.ConjugateMLL
+            Marginal y-log-likelihood of the Gaussian process, also marginalising out some mean function parameters.
 
             Prior's mean function should have a h(x) method applying the basis functions in the mean 
-            whose coefficients have been analytically marginalised out.
-
+            whose coefficients are being analytically marginalised out.
         """
         x, y = train_data.X, train_data.y
 
-        # Observation noise o²
         obs_noise = posterior.likelihood.obs_stddev**2
         mx = posterior.prior.mean_function(x)
 
-        # Σ = (Kxx + Io²) = LLᵀ
         Kxx = posterior.prior.kernel.gram(x)
         Kxx += cola.ops.I_like(Kxx) * posterior.prior.jitter
-        
         
         Ky = Kxx + cola.ops.I_like(Kxx) * obs_noise     
         Ky = cola.PSD(Ky)
@@ -46,26 +44,23 @@ class ConjugateMMLL(gpjax.objectives.AbstractObjective):
         C = Ky_inv @ cola.ops.Transpose(H) @ cola.inverse(A) @ H @ Ky_inv
         
         log_prob = 0.5*(jnp.transpose(jnp.atleast_1d((y - mx).squeeze())) @ ( C - Ky_inv ) @ jnp.atleast_1d((y - mx).squeeze())
-                        - cola.linalg.logdet(Ky) - cola.linalg.logdet(A) 
-                                                                             
+                        - cola.linalg.logdet(Ky) - cola.linalg.logdet(A)                                                                             
                         )
-
 
         return self.constant * log_prob
     
     
 def predictive_dist_corrected(predict_pts, posterior, train_data):  
     r"""
+    Adapted from gpjax.gps.ConjugatePosterior.predict
     Specifies predictive distribution of the GP, with some mean function coefficients
-    analytically marginalised.
+    analytically marginalised out.
     """
      
-    # Σ = (Kxx + Io²) = LLᵀ
     K = posterior.prior.kernel.gram(train_data.X)
     Kxx = K + cola.ops.I_like(K) * posterior.prior.jitter 
     mx = posterior.prior.mean_function(train_data.X)
     
-    # Observation noise o²
     obs_noise = posterior.likelihood.obs_stddev**2
     
     Ky = Kxx + cola.ops.I_like(Kxx) * obs_noise     
@@ -88,7 +83,7 @@ def predictive_dist_corrected(predict_pts, posterior, train_data):
     # correction for beta
     predict_cov += cola.ops.Transpose(R) @ cola.inverse(H@Ky_inv@cola.ops.Transpose(H)) @ R
     
-    return (predict_means, predict_cov.to_dense()) #gpjax.distributions.GaussianDistribution
+    return (predict_means, predict_cov.to_dense())
 
 
 class logdensity_GP():
@@ -101,7 +96,8 @@ class logdensity_GP():
         @dataclasses.dataclass
         class Quadratic(gpjax.mean_functions.AbstractMeanFunction):
             r"""
-            
+            Quadratic mean function. 
+            The quadratic coefficient is a hyperparameter, the linear coefficients will be marginalised out.
             """
             V_inv: jaxtyping.Float[gpjax.typing.Array, "1"] = gpjax.base.static_field(jnp.identity(self.dim))
             beta_2: jaxtyping.Float[gpjax.typing.Array, "1"] = gpjax.base.param_field(jnp.ones((1,1)))
@@ -124,12 +120,11 @@ class logdensity_GP():
         likelihood = gpjax.likelihoods.Gaussian(num_datapoints = n)
         self.posterior = prior * likelihood
         
-        
-    
+
     def fit(self, rng, opt_lr=1e-3):
         objective=jax.jit(ConjugateMMLL(negative=True))
         optimiser = optax.adam(learning_rate=opt_lr)
-        # Obtain Type 2 MLEs of the hyperparameters
+        # Obtain MLEs of the hyperparameters
         self.opt_posterior, history = gpjax.fit(
             model=self.posterior,
             objective=objective,
@@ -144,7 +139,6 @@ class logdensity_GP():
     def __call__(self, eval_points):
         return predictive_dist_corrected(eval_points, self.opt_posterior, self.train_data)
     
-    # @functools.partial(jax.vmap, in_axes=(None,0))
     def full_post_component(self, theta):
         mu_c, sigma_c = self(theta.reshape((1,self.dim)))
         return (mu_c + 1/2*sigma_c).reshape(())
