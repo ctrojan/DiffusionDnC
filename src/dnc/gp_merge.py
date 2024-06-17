@@ -21,7 +21,8 @@ class ConjugateMMLL(gpjax.objectives.AbstractObjective):
         train_data: gpjax.Dataset,
     ) -> gpjax.typing.ScalarFloat:
         r"""
-            Adapted from gpjax.objectives.ConjugateMLL
+            Adapted from gpjax.objectives.ConjugateMLL (https://github.com/JaxGaussianProcesses/GPJax)
+            
             Marginal y-log-likelihood of the Gaussian process, also marginalising out some mean function parameters.
 
             Prior's mean function should have a h(x) method applying the basis functions in the mean 
@@ -52,7 +53,8 @@ class ConjugateMMLL(gpjax.objectives.AbstractObjective):
     
 def predictive_dist_corrected(predict_pts, posterior, train_data):  
     r"""
-    Adapted from gpjax.gps.ConjugatePosterior.predict
+    Adapted from gpjax.gps.ConjugatePosterior.predict (https://github.com/JaxGaussianProcesses/GPJax)
+    
     Specifies predictive distribution of the GP, with some mean function coefficients
     analytically marginalised out.
     """
