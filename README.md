@@ -1,7 +1,7 @@
 # Diffusion Generative Modelling for Divide-and-Conquer MCMC
 
-Code to reproduce the results in the paper Diffusion Generative Modelling for
-Divide-and-Conquer MCMC.
+Code to reproduce the results in the paper [Diffusion Generative Modelling for
+Divide-and-Conquer MCMC](https://arxiv.org/abs/2406.11664).
 
 We recommend setting up a new environment to run these experiments. Dependencies can be installed by running the following command from the root directory:
 
